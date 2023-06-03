@@ -1,20 +1,30 @@
-from sqlalchemy import MetaData
+from sqlalchemy import MetaData, text
 from sqlalchemy.ext.automap import automap_base
 
 
 def automap_db(engine, schema):
     """Function to automatically map all tables from schema"""
 
-    # Generate declarative base from the database schema:
-    Base = automap_base()
-    # metadata = MetaData(schema=schema)
-    # Base = automap_base(bind=engine, metadata=metadata)
-    Base.prepare(engine, reflect=True, schema=schema, filter_names=["transactions"])
+    # Reflect each table individually
+    with engine.connect() as conn:
+        query = text(
+            "SELECT table_name FROM information_schema.tables WHERE table_schema = 'public';"
+        )
+        table_names = conn.execute(query).fetchall()
+        print(table_names)
 
-    # Get the tables objects:
-    dm = DataModel(Base.classes)
+    # # Generate declarative base from the database schema:
+    # Base = automap_base()
+    # metadata = MetaData()
+    # metadata.reflect(bind=engine)
+    # Base = automap_base(metadata=metadata)
+    # Base.prepare()
+    # # Base.prepare(engine, reflect=True, schema=schema)
 
-    return dm
+    # # Get the tables objects:
+    # dm = DataModel(Base.classes)
+
+    # return dm
 
 
 class DataModel:
