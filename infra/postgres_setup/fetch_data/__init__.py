@@ -1,8 +1,9 @@
+"""Retrieve tables data from database"""
+
 import pandas.io.sql as sqlio
 
 
 def fetch_table(table, conn, table_type):
-
     """Function to fetch one table from database"""
 
     if table_type == "table":
@@ -21,7 +22,6 @@ def fetch_table(table, conn, table_type):
 
 
 def fetch_table_names(conn, schema, include_views):
-
     """Function to fetch all tables at once"""
 
     tables_query = f"""

@@ -1,9 +1,21 @@
+import os
+
 from fastapi import HTTPException
 from sqlalchemy.orm.attributes import instance_dict
 
 
-def upsert_object(request_body, db_object):
+def get_environment():
+    """Function to retrieve current environment based on environment variable"""
 
+    # Value for HOSTING_INSTANCE is "cloud,<env>" e.g.: "cloud,prod"):
+    env = os.environ.get("HOSTING_INSTANCE").split(",")[-1]
+
+    print("ENV:::", env)
+
+    return env
+
+
+def upsert_object(request_body, db_object):
     """Function to iterate in update database object based only on keys passed in request"""
 
     for key, value in request_body.items():
@@ -19,7 +31,6 @@ def upsert_object(request_body, db_object):
 
 
 def add_and_commit(new_record, db_session):
-
     """Function to add and commit record to database"""
 
     # Adding new record to database:
@@ -34,7 +45,6 @@ def add_and_commit(new_record, db_session):
 
 
 def convert_to_dict(new_record):
-
     """Function to convert database object to dictionary for output response"""
 
     # Returning new id so that, when using instance_dict, a non-empty dictionary is returned:

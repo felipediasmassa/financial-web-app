@@ -1,5 +1,8 @@
 """Global constants"""
 
+import os
+
+SCHEMA = os.environ.get("DB_SCHEMA")
 
 CREATE_TABLES_FOLDER = "infra/postgres_setup/create_tables/sql_scripts"
 DUMMY_DATA_FOLDER = "infra/postgres_setup/insert_values/dummy_data"

@@ -11,9 +11,7 @@ import uvicorn
 from sqlalchemy import create_engine
 from sqlalchemy.orm import Session, sessionmaker
 
-from automap import automap_db
-
-import utils.db_parameters as db
+import utils.database as db
 
 
 # from routes.crud.tenders import TendersRouter
@@ -32,13 +30,12 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
+
 # Create engine to connect to the database:
-engine = create_engine(
-    f"cockroachdb://{db.USERNAME}:{db.PASSWORD}@{db.HOST}:{db.PORT}/{db.DB_NAME}"
-)
+engine = create_engine(db.get_db_url())
 
 # Mapping data model from database:
-dm = automap_db(engine, db.SCHEMA)
+dm = db.automap_db(engine, db.SCHEMA)
 
 
 # Register the routes with the app:

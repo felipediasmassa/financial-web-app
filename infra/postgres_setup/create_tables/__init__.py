@@ -1,19 +1,24 @@
+"""Create tables in database given sql scripts in folder"""
+
+# pylint: disable=invalid-name
+
 import glob
 
 
 def create_tables(tables_scripts_folder, schema, conn):
+    """Function to create tables in database from sql scripts"""
 
     str_query = ""
 
     # Iterating through SQL scripts that create tables:
     for file in glob.glob(tables_scripts_folder + "/*_tables.sql"):
-        f = open(file, "r")
-        str_query += f.read()
+        with open(file, "r", encoding="utf-8") as f:
+            str_query += f.read()
 
     # Iterating through SQL scripts that create foreign keys:
     for file in glob.glob(tables_scripts_folder + "/*_constraints.sql"):
-        f = open(file, "r")
-        str_query += f.read()
+        with open(file, "r", encoding="utf-8") as f:
+            str_query += f.read()
 
     # Splitting each SQL statement into a dedicated string to execute queries:
     str_statements = [
@@ -34,5 +39,3 @@ def create_tables(tables_scripts_folder, schema, conn):
     for query in str_statements:
         print(query)
         cur.execute(query)
-
-    return

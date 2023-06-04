@@ -1,3 +1,7 @@
+"""Create tables in database given sql scripts in folder"""
+
+# pylint: disable=invalid-name
+
 import os
 
 import numpy as np
@@ -15,8 +19,6 @@ def insert_values(dummy_data_folder, conn, population_order, include_id):
         # Loading example to database:
         load_example(csv_path=file, table=table_name, conn=conn, include_id=include_id)
 
-    return
-
 
 def load_example(csv_path, table, conn, include_id):
     """Receive csv path and upload data to Postgres"""
@@ -30,8 +32,6 @@ def load_example(csv_path, table, conn, include_id):
         table,
         drop_id=table not in include_id,  # for some tables, set drop_id = False
     )
-
-    return
 
 
 def read_csv(path):
