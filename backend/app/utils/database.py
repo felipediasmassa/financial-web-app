@@ -46,7 +46,7 @@ def reflect_metadata(engine, schema, tables):
     return metadata
 
 
-def automap_db(engine, schema):
+def automap_db(engine, schema=SCHEMA):
     """Function to automatically map all tables from schema"""
 
     # Getting tables from db:
@@ -66,8 +66,16 @@ def automap_db(engine, schema):
 
 
 def get_db_url(
-    username=USERNAME, password=PASSWORD, host=HOST, port=PORT, db_name=DB_NAME
+    username=USERNAME,
+    password=PASSWORD,
+    host=HOST,
+    port=PORT,
+    db_name=DB_NAME,
+    is_async=False,
 ):
     """Function to return database url given parameters"""
 
-    return f"cockroachdb://{username}:{password}@{host}:{port}/{db_name}"
+    if not is_async:
+        return f"cockroachdb://{username}:{password}@{host}:{port}/{db_name}"
+
+    return f"cockroachdb+asyncpg://{username}:{password}@{host}:{port}/{db_name}"

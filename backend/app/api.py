@@ -1,20 +1,18 @@
 """Main code for backend api"""
 
-from typing import Dict
 
-from fastapi import FastAPI, Depends
+from fastapi import FastAPI
 from fastapi.staticfiles import StaticFiles
 from fastapi.middleware.cors import CORSMiddleware
-from fastapi.responses import FileResponse, JSONResponse
+from fastapi.responses import FileResponse
 import uvicorn
 
 from sqlalchemy import create_engine
-from sqlalchemy.orm import Session, sessionmaker
+from sqlalchemy.orm import sessionmaker
 
 import utils.database as db
 
-
-# from routes.crud.tenders import TendersRouter
+from routes.crud.transactions import TransactionsRouter
 
 
 # FastAPI app instance:
@@ -30,82 +28,54 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-
 # Create engine to connect to the database:
 engine = create_engine(db.get_db_url())
 
 # Mapping data model from database:
-dm = db.automap_db(engine, db.SCHEMA)
+dm = db.automap_db(engine)
 
 
-# Register the routes with the app:
-# app.include_router(TendersRouter(dm), prefix="/api/crud/tenders", tags=["tender"])
+@app.middleware("http")
+async def db_session_middleware(request, call_next):
+    """
+    Middleware to automatically open database session before each API method is executed and to
+    close it as soon as method returns response
 
+    This method is called before every other request
+    """
 
-# async def create_pool() -> asyncpg.pool.Pool:
-#     """Create a PostgreSQL connection pool."""
-#     return await asyncpg.create_pool(
-#         min_size=1,
-#         max_size=10,
-#         host=db.HOST,
-#         port=db.PORT,
-#         database=db.DB_NAME,
-#         user=db.USERNAME,
-#         password=db.PASSWORD,
-#     )
+    response = None
 
+    try:
+        # Create a new database session for each request:
+        session = sessionmaker(autocommit=False, autoflush=False, bind=engine)
+        request.state.db = session()
+        response = await call_next(request)  # here the actual method is triggered
+    finally:
+        # Close the database session after each request:
+        request.state.db.close()
 
-# @app.on_event("startup")
-# async def startup_event():
-#     """Create a connection pool on startup and store it in the app state."""
-#     app.state.pool = await create_pool()
-
-
-# @app.on_event("shutdown")
-# async def shutdown_event():
-#     """Close all connections in the connection pool when the application shuts down."""
-#     await app.state.pool.close()
-
-
-# @app.exception_handler(asyncpg.PostgresError)
-# def database_exc_handler(*args) -> JSONResponse:  # pylint: disable=unused-argument
-#     """Handles database errors returning a database error message."""
-#     # pylint: disable=unused-import
-#     return JSONResponse(status_code=500, content={"message": "Database error"})
-
-
-# async def get_conn() -> asyncpg.Connection:
-#     """Get a connection from the connection pool."""
-#     async with app.state.pool.acquire() as conn:
-#         yield conn
-
-
-# @app.get("/example/rds")
-# async def example_rds(
-#     conn: asyncpg.Connection = Depends(get_conn),
-# ) -> Dict[str, str]:
-#     """An example endpoint that requires a database connection"""
-#     # return {"version": await conn.fetchval("SELECT version()")}
-#     return {
-#         "schemas": await conn.fetchval(
-#             "SELECT schema_name FROM information_schema.schemata;"
-#         )
-#     }
+    return response
 
 
 @app.get("/actuator/health")
 def heartbeat():
     """Method to test app endpoint during deployment"""
-
     return {"status": "up"}
 
 
 @app.get("/favicon.ico", include_in_schema=False)
 async def favicon():
     """Method to return favicon"""
-
     return FileResponse("favicon.ico")
 
+
+# Register the routes with the app:
+app.include_router(
+    TransactionsRouter(dm),
+    prefix="/api/crud/transactions",
+    tags=["transaction"],
+)
 
 # Mounting the static files directory (serving frontend from backend):
 app.mount("/", StaticFiles(directory="static/", html=True), name="static")
