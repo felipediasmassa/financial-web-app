@@ -1,0 +1,15 @@
+This Month
+Last 3 Months
+Last Year
+Custom Date Filter (button that expands when clicked): From [DatePicker] To [DatePicker]
+
+Sort By (opens anchor with more fields to sort)
+
+Filter By (opens anchor with more fields to sort)
+
+Grid with 2/3 columns
+
+Grid Card with beautiful shadow
+
+New Transaction Button (showing on top of grid)
+Edit Transaction Button (when clicking edit icon on grid card)
