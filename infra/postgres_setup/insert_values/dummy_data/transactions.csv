@@ -1,0 +1,11 @@
+ID,IS_REVENUE,CATEGORY_ID,TRANSACTION_DATE,TRANSACTION_AMOUNT,TRANSACTION_DESCRIPTION,COMMENTS
+1,TRUE,1,31-Jan-23,10000,Felipe fixed income,Technip
+2,TRUE,1,28-Feb-23,7000,Helena fixed income,IFF
+3,TRUE,2,28-Jan-23,2500,Helena variable income,Gloria DOr
+4,FALSE,3,5-Jan-23,3500,House rent,Botafogo
+5,FALSE,4,10-Jan-23,1200,Felipe transportation,Metro
+6,FALSE,4,5-Feb-23,400,Felipe transportation,Bus
+7,FALSE,4,25-Feb-23,900,Helena transportation,Fuel
+8,FALSE,5,15-Feb-23,150,Cinema,Little Mermaid
+9,FALSE,5,8-Jan-23,350,Dinner,Burger
+10,FALSE,5,19-Jan-23,250,Date,Cavi

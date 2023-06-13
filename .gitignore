@@ -1,0 +1,5 @@
+venv
+env.sh
+__pycache__
+
+*.pptx
